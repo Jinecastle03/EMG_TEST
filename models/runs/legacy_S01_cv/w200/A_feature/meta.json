@@ -1,0 +1,69 @@
+{
+  "run_id": "legacy_S01_cv",
+  "family": "A_feature",
+  "display": "Feature-based RF/LR (baseline)",
+  "window_ms": 200.0,
+  "pose_classes": [
+    "Rest",
+    "Grip",
+    "Twist CCW",
+    "Twist CW"
+  ],
+  "effort_poses": [
+    "Grip",
+    "Twist CCW",
+    "Twist CW"
+  ],
+  "effort_input": "emg",
+  "test_pose_macro_f1": 0.928906266755151,
+  "cv_pose_macro_f1": 0.8587549679960704,
+  "test_effort_ba_true_pose": 0.7396907216494846,
+  "test_effort_ba_cascade": 0.7302405498281788,
+  "cv_effort_ba_true_pose": 0.8051430104788005,
+  "latency_median_ms": 13.663799967616796,
+  "latency_p95_ms": 15.017015024204738,
+  "rest_fp_raw": 0.1452513966480447,
+  "rest_fp_smoothed": 0.10614525139664804,
+  "switches_per_s_raw": 1.1169024571854058,
+  "switches_per_s_smoothed": 0.34251675353685773,
+  "parity_max_abs_diff": 8.881784197001252e-16,
+  "train_sessions": [
+    "Session_20261103_173516_legacy"
+  ],
+  "split": "trial",
+  "quick": false,
+  "recommended": false,
+  "input_spec": {
+    "window_ms": 200.0,
+    "stride_ms": 50.0,
+    "predictions_per_s": 20.0,
+    "overlap_ms": 150.0,
+    "emg": {
+      "channels": 8,
+      "rate_hz": 500.0,
+      "samples": 100,
+      "preprocessing": "causal HP 20 Hz (4th order) + notch 60 Hz & harmonics; no rectification"
+    },
+    "imu": {
+      "channels": "acc x,y,z (g) + gyro x,y,z (deg/s)",
+      "rate_hz": 50.0,
+      "samples": 10
+    },
+    "pose": {
+      "uses": [
+        "emg",
+        "imu"
+      ],
+      "input": "EMG features 32 (RMS, MAV, WL, STD x 8 ch) + IMU features 13 (gyro mean/std x3, |gyro| mean, acc mean/std x3)",
+      "model": "Random Forest on log1p + z-scored features"
+    },
+    "effort": {
+      "uses": [
+        "emg"
+      ],
+      "input": "EMG features 32 (RMS, MAV, WL, STD x 8 ch)",
+      "model": "Logistic Regression, one per pose"
+    }
+  },
+  "input_spec_text": "예측 1회 = 최근 200 ms 구간 · 50 ms마다 예측 = 20 Hz (연속 예측끼리 150 ms 겹침)\n  EMG 8ch @ 500 Hz → 100 샘플/ch (필터: HP 20 Hz + notch 60 Hz)\n  IMU 6축 @ 50 Hz → 10 샘플/축 (acc xyz g, gyro xyz °/s)\n  Pose: EMG + IMU 사용 → EMG features 32 (RMS, MAV, WL, STD x 8 ch) + IMU features 13 (gyro mean/std x3, |gyro| mean, acc mean/std x3) → Random Forest on log1p + z-scored features\n  Effort: EMG 사용 → EMG features 32 (RMS, MAV, WL, STD x 8 ch) → Logistic Regression, one per pose"
+}

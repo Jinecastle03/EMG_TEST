@@ -1,0 +1,68 @@
+{
+  "run_id": "legacy_S01_cv",
+  "family": "C_imu_cnn",
+  "display": "IMU-only 1D-CNN",
+  "window_ms": 500.0,
+  "pose_classes": [
+    "Rest",
+    "Grip",
+    "Twist CCW",
+    "Twist CW"
+  ],
+  "effort_poses": [
+    "Grip",
+    "Twist CCW",
+    "Twist CW"
+  ],
+  "effort_input": "imu",
+  "test_pose_macro_f1": 0.9386677602686275,
+  "cv_pose_macro_f1": 0.819231386779907,
+  "test_effort_ba_true_pose": 0.7902930402930403,
+  "test_effort_ba_cascade": 0.7902930402930403,
+  "cv_effort_ba_true_pose": 0.5606221651911307,
+  "latency_median_ms": 0.4340499872341752,
+  "latency_p95_ms": 0.6646399910096077,
+  "rest_fp_raw": 0.2129032258064516,
+  "rest_fp_smoothed": 0.16774193548387098,
+  "switches_per_s_raw": 0.5292702485966321,
+  "switches_per_s_smoothed": 0.2085004009623096,
+  "parity_max_abs_diff": 4.172325134277344e-07,
+  "train_sessions": [
+    "Session_20261103_173516_legacy"
+  ],
+  "split": "trial",
+  "quick": false,
+  "recommended": false,
+  "input_spec": {
+    "window_ms": 500.0,
+    "stride_ms": 50.0,
+    "predictions_per_s": 20.0,
+    "overlap_ms": 450.0,
+    "emg": {
+      "channels": 8,
+      "rate_hz": 500.0,
+      "samples": 250,
+      "preprocessing": "causal HP 20 Hz (4th order) + notch 60 Hz & harmonics; no rectification"
+    },
+    "imu": {
+      "channels": "acc x,y,z (g) + gyro x,y,z (deg/s)",
+      "rate_hz": 50.0,
+      "samples": 25
+    },
+    "pose": {
+      "uses": [
+        "imu"
+      ],
+      "input": "IMU (6, 25) time series (scaled per channel, no hand-crafted features)",
+      "model": "1D-CNN imu -> pose softmax"
+    },
+    "effort": {
+      "uses": [
+        "imu"
+      ],
+      "input": "IMU (6, 25) time series (scaled per channel, no hand-crafted features)",
+      "model": "1D-CNN imu -> P(High) per pose"
+    }
+  },
+  "input_spec_text": "예측 1회 = 최근 500 ms 구간 · 50 ms마다 예측 = 20 Hz (연속 예측끼리 450 ms 겹침)\n  EMG 8ch @ 500 Hz → 250 샘플/ch (필터: HP 20 Hz + notch 60 Hz)\n  IMU 6축 @ 50 Hz → 25 샘플/축 (acc xyz g, gyro xyz °/s)\n  Pose: IMU 사용 → IMU (6, 25) time series (scaled per channel, no hand-crafted features) → 1D-CNN imu -> pose softmax\n  Effort: IMU 사용 → IMU (6, 25) time series (scaled per channel, no hand-crafted features) → 1D-CNN imu -> P(High) per pose"
+}

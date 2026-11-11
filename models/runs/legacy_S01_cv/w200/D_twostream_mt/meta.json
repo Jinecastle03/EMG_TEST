@@ -1,0 +1,70 @@
+{
+  "run_id": "legacy_S01_cv",
+  "family": "D_twostream_mt",
+  "display": "EMG+IMU Two-Stream CNN (multi-task)",
+  "window_ms": 200.0,
+  "pose_classes": [
+    "Rest",
+    "Grip",
+    "Twist CCW",
+    "Twist CW"
+  ],
+  "effort_poses": [
+    "Grip",
+    "Twist CCW",
+    "Twist CW"
+  ],
+  "effort_input": "emg+imu",
+  "test_pose_macro_f1": 0.944769553045817,
+  "cv_pose_macro_f1": 0.8284203796242757,
+  "test_effort_ba_true_pose": 0.7723367697594502,
+  "test_effort_ba_cascade": 0.7663230240549828,
+  "cv_effort_ba_true_pose": 0.7801321533529121,
+  "latency_median_ms": 0.4170500033069402,
+  "latency_p95_ms": 0.7249999849591402,
+  "rest_fp_raw": 0.09497206703910614,
+  "rest_fp_smoothed": 0.08379888268156424,
+  "switches_per_s_raw": 0.9084139985107966,
+  "switches_per_s_smoothed": 0.193596425912137,
+  "parity_max_abs_diff": 2.980232238769531e-07,
+  "train_sessions": [
+    "Session_20261103_173516_legacy"
+  ],
+  "split": "trial",
+  "quick": false,
+  "recommended": false,
+  "input_spec": {
+    "window_ms": 200.0,
+    "stride_ms": 50.0,
+    "predictions_per_s": 20.0,
+    "overlap_ms": 150.0,
+    "emg": {
+      "channels": 8,
+      "rate_hz": 500.0,
+      "samples": 100,
+      "preprocessing": "causal HP 20 Hz (4th order) + notch 60 Hz & harmonics; no rectification"
+    },
+    "imu": {
+      "channels": "acc x,y,z (g) + gyro x,y,z (deg/s)",
+      "rate_hz": 50.0,
+      "samples": 10
+    },
+    "pose": {
+      "uses": [
+        "emg",
+        "imu"
+      ],
+      "input": "EMG (8, 100) + IMU (6, 10) time series (scaled per channel, no hand-crafted features)",
+      "model": "1D-CNN emg+imu -> pose softmax"
+    },
+    "effort": {
+      "uses": [
+        "emg",
+        "imu"
+      ],
+      "input": "EMG (8, 100) + IMU (6, 10) time series (scaled per channel, no hand-crafted features)",
+      "model": "1D-CNN emg+imu -> P(High) per pose (shared encoder, multi-task)"
+    }
+  },
+  "input_spec_text": "예측 1회 = 최근 200 ms 구간 · 50 ms마다 예측 = 20 Hz (연속 예측끼리 150 ms 겹침)\n  EMG 8ch @ 500 Hz → 100 샘플/ch (필터: HP 20 Hz + notch 60 Hz)\n  IMU 6축 @ 50 Hz → 10 샘플/축 (acc xyz g, gyro xyz °/s)\n  Pose: EMG + IMU 사용 → EMG (8, 100) + IMU (6, 10) time series (scaled per channel, no hand-crafted features) → 1D-CNN emg+imu -> pose softmax\n  Effort: EMG + IMU 사용 → EMG (8, 100) + IMU (6, 10) time series (scaled per channel, no hand-crafted features) → 1D-CNN emg+imu -> P(High) per pose (shared encoder, multi-task)"
+}

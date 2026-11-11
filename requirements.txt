@@ -1,0 +1,12 @@
+# Python 3.14 (tested). torch is taken from the system site-packages (venv created with --system-site-packages);
+# install it separately if needed: https://pytorch.org (CUDA build optional, CPU is enough for inference).
+mindrove==5.3.0
+PySide6==6.12.0
+pyqtgraph==0.14.0
+numpy>=2.4
+scipy>=1.18
+pandas>=3.0
+scikit-learn==1.9.0
+joblib>=1.5
+matplotlib>=3.10
+torch>=2.10
